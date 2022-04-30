@@ -2,6 +2,7 @@ package com.kk99corn.alertUmbrella.repository;
 
 import com.kk99corn.alertUmbrella.domain.Member;
 
+import java.util.HashMap;
 import java.util.List;
 
 public interface MemberRepository {
@@ -11,5 +12,5 @@ public interface MemberRepository {
 
 	Member findByMemberSeq(int memberSeq);
 
-	// List<Member> findAll();
+	List<Member> findAll();
 }
