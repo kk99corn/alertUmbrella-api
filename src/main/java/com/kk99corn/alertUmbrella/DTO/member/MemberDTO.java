@@ -6,7 +6,15 @@ import lombok.*;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@ToString
 public class MemberDTO {
 	private String id;
 	private String password;
+
+	public Member toEntity() {
+		return Member.builder()
+				.memberId(id)
+				.memberPassword(password)
+				.build();
+	}
 }

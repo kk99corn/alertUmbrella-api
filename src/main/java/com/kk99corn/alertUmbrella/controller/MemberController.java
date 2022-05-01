@@ -37,11 +37,31 @@ public class MemberController {
 	@GetMapping("member")
 	public ResponseEntity<ApiResponseMessage> getMember(@RequestParam("memberSeq") int memberSeq) {
 		HttpHeaders headers = new HttpHeaders();
-		headers.setContentType(new MediaType("application", "json", StandardCharsets.UTF_8));
-
 		ApiResponseMessage message = new ApiResponseMessage();
 
+		headers.setContentType(new MediaType("application", "json", StandardCharsets.UTF_8));
+
 		Member member = memberService.findByMemberSeq(memberSeq);
+
+		message.setStatus(HttpStatus.OK.value());
+		message.setDescription("");
+		message.setData(member);
+
+		return new ResponseEntity<>(message, headers, message.getStatus());
+	}
+
+	@PostMapping("member")
+	public ResponseEntity<ApiResponseMessage> postMember(@RequestParam("id") String id, @RequestParam("password") String password) {
+		HttpHeaders headers = new HttpHeaders();
+		ApiResponseMessage message = new ApiResponseMessage();
+
+		headers.setContentType(new MediaType("application", "json", StandardCharsets.UTF_8));
+
+		MemberDTO memberDTO = new MemberDTO();
+		memberDTO.setId(id);
+		memberDTO.setPassword(password);
+
+		Member member = memberService.joinMember(memberDTO);
 
 		message.setStatus(HttpStatus.OK.value());
 		message.setDescription("");
