@@ -1,5 +1,6 @@
 package com.kk99corn.alertUmbrella.controller;
 
+import com.kk99corn.alertUmbrella.DTO.member.MemberDTO;
 import com.kk99corn.alertUmbrella.domain.Member;
 import com.kk99corn.alertUmbrella.model.ApiResponseMessage;
 import com.kk99corn.alertUmbrella.service.MemberService;
@@ -11,12 +12,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
-import java.util.List;
 
 @RestController
 public class MemberController {
@@ -27,7 +27,7 @@ public class MemberController {
 		this.memberService = memberService;
 	}
 
-	@Operation(summary = "test hello", description = "hello api example")
+	@Operation(summary = "회원번호로 회원 조회", description = "회원번호로 회원 조회 API")
 	@ApiResponses({
 			@ApiResponse(responseCode = "200", description = "OK"),
 			@ApiResponse(responseCode = "400", description = "BAD REQUEST"),
@@ -35,37 +35,18 @@ public class MemberController {
 			@ApiResponse(responseCode = "500", description = "INTERNAL SERVER ERROR")
 	})
 	@GetMapping("member")
-	public Member getMember(@RequestParam("memberSeq") int memberSeq){
-		return memberService.findByMemberSeq(memberSeq);
-	}
-
-	@GetMapping("test")
-	public ResponseEntity<ApiResponseMessage> test() {
-		Member member = memberService.findByMemberSeq(1);
-
+	public ResponseEntity<ApiResponseMessage> getMember(@RequestParam("memberSeq") int memberSeq) {
 		HttpHeaders headers = new HttpHeaders();
 		headers.setContentType(new MediaType("application", "json", StandardCharsets.UTF_8));
 
 		ApiResponseMessage message = new ApiResponseMessage();
-		message.setStatus(200);
+
+		Member member = memberService.findByMemberSeq(memberSeq);
+
+		message.setStatus(HttpStatus.OK.value());
 		message.setDescription("");
 		message.setData(member);
 
-		return new ResponseEntity<>(message, headers, HttpStatus.OK);
-	}
-
-	@GetMapping("members")
-	public ResponseEntity<ApiResponseMessage> getMembers() {
-		List<Member> memberList = memberService.findAll();
-
-		HttpHeaders headers = new HttpHeaders();
-		headers.setContentType(new MediaType("application", "json", StandardCharsets.UTF_8));
-
-		ApiResponseMessage message = new ApiResponseMessage();
-		message.setStatus(200);
-		message.setDescription("");
-		message.setData(memberList);
-
-		return new ResponseEntity<>(message, headers, HttpStatus.OK);
+		return new ResponseEntity<>(message, headers, message.getStatus());
 	}
 }
