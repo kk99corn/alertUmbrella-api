@@ -20,6 +20,10 @@ public class MemberService {
 		return memberRepository.findByMemberSeq(memberSeq);
 	}
 
+	public Member findByMemberId(String memberId) {
+		return memberRepository.findByMemberId(memberId);
+	}
+
 	public List<Member> findAll() {
 		return memberRepository.findAll();
 	}

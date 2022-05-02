@@ -11,6 +11,7 @@ public interface MemberRepository {
 	// Member joinMember(Member member);
 
 	Member findByMemberSeq(int memberSeq);
+	Member findByMemberId(String memberId);
 	Member save(Member member);
 	List<Member> findAll();
 }

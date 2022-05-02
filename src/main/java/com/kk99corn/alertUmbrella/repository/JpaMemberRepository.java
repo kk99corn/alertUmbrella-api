@@ -9,6 +9,7 @@ import java.util.List;
 public interface JpaMemberRepository extends JpaRepository<Member, Integer>, MemberRepository {
 
 	Member findByMemberSeq(Integer integer);
+	Member findByMemberId(String memberId);
 
 	List<Member> findAll();
 }

@@ -7,10 +7,12 @@ import com.kk99corn.alertUmbrella.service.MemberService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -22,6 +24,9 @@ import java.nio.charset.StandardCharsets;
 public class MemberController {
 
 	private final MemberService memberService;
+
+	@Autowired
+	private PasswordEncoder passwordEncoder;
 
 	public MemberController(MemberService memberService) {
 		this.memberService = memberService;
@@ -35,13 +40,29 @@ public class MemberController {
 			@ApiResponse(responseCode = "500", description = "INTERNAL SERVER ERROR")
 	})
 	@GetMapping("member")
-	public ResponseEntity<ApiResponseMessage> getMember(@RequestParam("memberSeq") int memberSeq) {
+	public ResponseEntity<ApiResponseMessage> getMember(
+			@RequestParam(value = "memberSeq", required = false) Integer memberSeq,
+			@RequestParam(value = "memberId", required = false) String memberId,
+			@RequestParam(value = "memberPassword", required = false) String memberPassword) {
 		HttpHeaders headers = new HttpHeaders();
 		ApiResponseMessage message = new ApiResponseMessage();
 
 		headers.setContentType(new MediaType("application", "json", StandardCharsets.UTF_8));
 
-		Member member = memberService.findByMemberSeq(memberSeq);
+		Member member = null;
+		if (memberSeq != null) {
+			member = memberService.findByMemberSeq(memberSeq);
+		} else if (memberId != null) {
+			System.out.println("memberId = " + memberId);
+			member = memberService.findByMemberId(memberId);
+			System.out.println("member.getMemberPassword() = " + member.getMemberPassword());
+			if (memberPassword != null) {
+				System.out.println("memberPassword = " + memberPassword);
+				if (!passwordEncoder.matches(memberPassword, member.getMemberPassword())) {
+					member = null;
+				}
+			}
+		}
 
 		message.setStatus(HttpStatus.OK.value());
 		message.setDescription("");
@@ -50,22 +71,39 @@ public class MemberController {
 		return new ResponseEntity<>(message, headers, message.getStatus());
 	}
 
+	@Operation(summary = "회원 가입", description = "회원 가입 API")
+	@ApiResponses({
+			@ApiResponse(responseCode = "200", description = "OK"),
+			@ApiResponse(responseCode = "400", description = "BAD REQUEST"),
+			@ApiResponse(responseCode = "404", description = "NOT FOUND"),
+			@ApiResponse(responseCode = "500", description = "INTERNAL SERVER ERROR")
+	})
 	@PostMapping("member")
-	public ResponseEntity<ApiResponseMessage> postMember(@RequestParam("id") String id, @RequestParam("password") String password) {
+	public ResponseEntity<ApiResponseMessage> postMember(
+			@RequestParam("id") String id,
+			@RequestParam("password") String password) {
 		HttpHeaders headers = new HttpHeaders();
 		ApiResponseMessage message = new ApiResponseMessage();
 
 		headers.setContentType(new MediaType("application", "json", StandardCharsets.UTF_8));
 
-		MemberDTO memberDTO = new MemberDTO();
-		memberDTO.setId(id);
-		memberDTO.setPassword(password);
 
-		Member member = memberService.joinMember(memberDTO);
+		//동일한 MemberId 체크
+		Member memberCheck = memberService.findByMemberId(id);
+		if (memberCheck == null) {
+			MemberDTO memberDTO = new MemberDTO();
+			memberDTO.setId(id);
+			memberDTO.setPassword(passwordEncoder.encode(password));
 
-		message.setStatus(HttpStatus.OK.value());
-		message.setDescription("");
-		message.setData(member);
+			Member member = memberService.joinMember(memberDTO);
+
+			message.setStatus(HttpStatus.OK.value());
+			message.setDescription("");
+			message.setData(member);
+		} else {
+			message.setStatus(HttpStatus.OK.value());
+			message.setDescription("memberId duplicated");
+		}
 
 		return new ResponseEntity<>(message, headers, message.getStatus());
 	}
