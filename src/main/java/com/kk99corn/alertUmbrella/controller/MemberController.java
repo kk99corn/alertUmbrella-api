@@ -55,12 +55,16 @@ public class MemberController {
 			status = HttpStatus.OK.value();
 		} else if (memberId != null) {
 			member = memberService.findByMemberId(memberId);
-			status = HttpStatus.OK.value();
-			if (memberPassword != null) {
-				if (!passwordEncoder.matches(memberPassword, memberService.findPasswordByMemberId(memberId))) {
-					member = null;
-					status = HttpStatus.BAD_REQUEST.value();
+			if (member != null) {
+				status = HttpStatus.OK.value();
+				if (memberPassword != null) {
+					if (!passwordEncoder.matches(memberPassword, memberService.findPasswordByMemberId(memberId))) {
+						member = null;
+						status = HttpStatus.NO_CONTENT.value();
+					}
 				}
+			} else {
+				status = HttpStatus.NO_CONTENT.value();
 			}
 		}
 
@@ -103,7 +107,7 @@ public class MemberController {
 			message.setDescription("");
 			message.setData(member);
 		} else {
-			message.setStatus(HttpStatus.BAD_REQUEST.value());
+			message.setStatus(HttpStatus.NO_CONTENT.value());
 			message.setDescription("memberId duplicated");
 		}
 

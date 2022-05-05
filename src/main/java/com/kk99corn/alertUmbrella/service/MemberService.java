@@ -19,18 +19,26 @@ public class MemberService {
 
 	public MemberVO findByMemberSeq(int memberSeq) {
 		Member member = memberRepository.findByMemberSeq(memberSeq);
-		return MemberVO.builder()
-				.id(member.getMemberId())
-				.name(member.getMemberName())
-				.build();
+		MemberVO memberVO = null;
+		if (member != null) {
+			memberVO = MemberVO.builder()
+					.id(member.getMemberId())
+					.name(member.getMemberName())
+					.build();
+		}
+		return memberVO;
 	}
 
 	public MemberVO findByMemberId(String memberId) {
 		Member member = memberRepository.findByMemberId(memberId);
-		return MemberVO.builder()
-				.id(member.getMemberId())
-				.name(member.getMemberName())
-				.build();
+		MemberVO memberVO = null;
+		if (member != null) {
+			memberVO = MemberVO.builder()
+					.id(member.getMemberId())
+					.name(member.getMemberName())
+					.build();
+		}
+		return memberVO;
 	}
 
 	public String findPasswordByMemberId(String memberId) {
