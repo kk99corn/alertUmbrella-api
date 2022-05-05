@@ -76,6 +76,7 @@ public class MemberServiceTest {
 	void joinMember() {
 		MemberDTO memberDTO = new MemberDTO();
 		memberDTO.setId("joinTest");
+		memberDTO.setName("testtest");
 		memberDTO.setPassword(passwordEncoder.encode("1234"));
 
 		System.out.println("memberDTO.getPassword() = " + memberDTO.getPassword());

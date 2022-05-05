@@ -13,14 +13,12 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.nio.charset.StandardCharsets;
 
 @RestController
+@RequestMapping("/api/v1")
 public class MemberController {
 
 	private final MemberService memberService;
@@ -53,11 +51,8 @@ public class MemberController {
 		if (memberSeq != null) {
 			member = memberService.findByMemberSeq(memberSeq);
 		} else if (memberId != null) {
-			System.out.println("memberId = " + memberId);
 			member = memberService.findByMemberId(memberId);
-			System.out.println("member.getMemberPassword() = " + member.getMemberPassword());
 			if (memberPassword != null) {
-				System.out.println("memberPassword = " + memberPassword);
 				if (!passwordEncoder.matches(memberPassword, member.getMemberPassword())) {
 					member = null;
 				}
@@ -81,6 +76,7 @@ public class MemberController {
 	@PostMapping("member")
 	public ResponseEntity<ApiResponseMessage> postMember(
 			@RequestParam("id") String id,
+			@RequestParam("name") String name,
 			@RequestParam("password") String password) {
 		HttpHeaders headers = new HttpHeaders();
 		ApiResponseMessage message = new ApiResponseMessage();
@@ -93,6 +89,7 @@ public class MemberController {
 		if (memberCheck == null) {
 			MemberDTO memberDTO = new MemberDTO();
 			memberDTO.setId(id);
+			memberDTO.setName(name);
 			memberDTO.setPassword(passwordEncoder.encode(password));
 
 			Member member = memberService.joinMember(memberDTO);
@@ -101,7 +98,7 @@ public class MemberController {
 			message.setDescription("");
 			message.setData(member);
 		} else {
-			message.setStatus(HttpStatus.OK.value());
+			message.setStatus(HttpStatus.BAD_REQUEST.value());
 			message.setDescription("memberId duplicated");
 		}
 

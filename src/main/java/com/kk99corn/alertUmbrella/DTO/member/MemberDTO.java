@@ -9,11 +9,13 @@ import lombok.*;
 @ToString
 public class MemberDTO {
 	private String id;
+	private String name;
 	private String password;
 
 	public Member toEntity() {
 		return Member.builder()
 				.memberId(id)
+				.memberName(name)
 				.memberPassword(password)
 				.build();
 	}

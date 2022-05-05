@@ -26,14 +26,18 @@ public class Member {
 	private String memberPassword;
 
 	@NotNull
+	private String memberName;
+
+	@NotNull
 	@CreationTimestamp
 	private Date inputDate;
 
 	@Builder
-	public Member(int memberSeq, String memberId, String memberPassword, Date inputDate) {
+	public Member(int memberSeq, String memberId, String memberPassword, String memberName, Date inputDate) {
 		this.memberSeq = memberSeq;
 		this.memberId = memberId;
 		this.memberPassword = memberPassword;
+		this.memberName = memberName;
 		this.inputDate = inputDate;
 	}
 }
