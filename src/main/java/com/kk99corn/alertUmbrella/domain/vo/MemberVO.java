@@ -1,4 +1,4 @@
-package com.kk99corn.alertUmbrella.DTO.member;
+package com.kk99corn.alertUmbrella.domain.vo;
 
 import com.kk99corn.alertUmbrella.domain.Member;
 import lombok.*;
@@ -6,17 +6,16 @@ import lombok.*;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 @ToString
-public class MemberDTO {
+public class MemberVO {
 	private String id;
 	private String name;
-	private String password;
 
 	public Member toEntity() {
 		return Member.builder()
 				.memberId(id)
 				.memberName(name)
-				.memberPassword(password)
 				.build();
 	}
 }

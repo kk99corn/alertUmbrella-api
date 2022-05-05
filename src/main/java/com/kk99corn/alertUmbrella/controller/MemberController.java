@@ -1,7 +1,8 @@
 package com.kk99corn.alertUmbrella.controller;
 
-import com.kk99corn.alertUmbrella.DTO.member.MemberDTO;
 import com.kk99corn.alertUmbrella.domain.Member;
+import com.kk99corn.alertUmbrella.domain.dto.MemberDTO;
+import com.kk99corn.alertUmbrella.domain.vo.MemberVO;
 import com.kk99corn.alertUmbrella.model.ApiResponseMessage;
 import com.kk99corn.alertUmbrella.service.MemberService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -47,19 +48,23 @@ public class MemberController {
 
 		headers.setContentType(new MediaType("application", "json", StandardCharsets.UTF_8));
 
-		Member member = null;
+		MemberVO member = null;
+		int status = 0;
 		if (memberSeq != null) {
 			member = memberService.findByMemberSeq(memberSeq);
+			status = HttpStatus.OK.value();
 		} else if (memberId != null) {
 			member = memberService.findByMemberId(memberId);
+			status = HttpStatus.OK.value();
 			if (memberPassword != null) {
-				if (!passwordEncoder.matches(memberPassword, member.getMemberPassword())) {
+				if (!passwordEncoder.matches(memberPassword, memberService.findPasswordByMemberId(memberId))) {
 					member = null;
+					status = HttpStatus.BAD_REQUEST.value();
 				}
 			}
 		}
 
-		message.setStatus(HttpStatus.OK.value());
+		message.setStatus(status);
 		message.setDescription("");
 		message.setData(member);
 
@@ -85,14 +90,14 @@ public class MemberController {
 
 
 		//동일한 MemberId 체크
-		Member memberCheck = memberService.findByMemberId(id);
+		MemberVO memberCheck = memberService.findByMemberId(id);
 		if (memberCheck == null) {
 			MemberDTO memberDTO = new MemberDTO();
 			memberDTO.setId(id);
 			memberDTO.setName(name);
 			memberDTO.setPassword(passwordEncoder.encode(password));
 
-			Member member = memberService.joinMember(memberDTO);
+			MemberVO member = memberService.joinMember(memberDTO);
 
 			message.setStatus(HttpStatus.OK.value());
 			message.setDescription("");

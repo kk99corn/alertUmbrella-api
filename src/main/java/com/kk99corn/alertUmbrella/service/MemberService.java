@@ -1,7 +1,8 @@
 package com.kk99corn.alertUmbrella.service;
 
-import com.kk99corn.alertUmbrella.DTO.member.MemberDTO;
 import com.kk99corn.alertUmbrella.domain.Member;
+import com.kk99corn.alertUmbrella.domain.dto.MemberDTO;
+import com.kk99corn.alertUmbrella.domain.vo.MemberVO;
 import com.kk99corn.alertUmbrella.repository.MemberRepository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -16,20 +17,36 @@ public class MemberService {
 		this.memberRepository = memberRepository;
 	}
 
-	public Member findByMemberSeq(int memberSeq) {
-		return memberRepository.findByMemberSeq(memberSeq);
+	public MemberVO findByMemberSeq(int memberSeq) {
+		Member member = memberRepository.findByMemberSeq(memberSeq);
+		return MemberVO.builder()
+				.id(member.getMemberId())
+				.name(member.getMemberName())
+				.build();
 	}
 
-	public Member findByMemberId(String memberId) {
-		return memberRepository.findByMemberId(memberId);
+	public MemberVO findByMemberId(String memberId) {
+		Member member = memberRepository.findByMemberId(memberId);
+		return MemberVO.builder()
+				.id(member.getMemberId())
+				.name(member.getMemberName())
+				.build();
+	}
+
+	public String findPasswordByMemberId(String memberId) {
+		return memberRepository.findByMemberId(memberId).getMemberPassword();
 	}
 
 	public List<Member> findAll() {
 		return memberRepository.findAll();
 	}
 
-	public Member joinMember(MemberDTO memberDTO) {
+	public MemberVO joinMember(MemberDTO memberDTO) {
 		Member member = memberDTO.toEntity();
-		return memberRepository.save(member);
+		Member saveMember = memberRepository.save(member);
+		return MemberVO.builder()
+				.id(saveMember.getMemberId())
+				.name(saveMember.getMemberName())
+				.build();
 	}
 }

@@ -1,7 +1,8 @@
 package com.kk99corn.alertUmbrella.service;
 
-import com.kk99corn.alertUmbrella.DTO.member.MemberDTO;
 import com.kk99corn.alertUmbrella.domain.Member;
+import com.kk99corn.alertUmbrella.domain.dto.MemberDTO;
+import com.kk99corn.alertUmbrella.domain.vo.MemberVO;
 import com.kk99corn.alertUmbrella.repository.MemberRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -80,9 +81,9 @@ public class MemberServiceTest {
 		memberDTO.setPassword(passwordEncoder.encode("1234"));
 
 		System.out.println("memberDTO.getPassword() = " + memberDTO.getPassword());
-		Member member = memberService.joinMember(memberDTO);
+		MemberVO member = memberService.joinMember(memberDTO);
 
-		assertThat(memberDTO.getId()).isEqualTo(member.getMemberId());
+		assertThat(memberDTO.getId()).isEqualTo(member.getId());
 	}
 
 	@Test
