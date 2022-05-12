@@ -113,4 +113,28 @@ public class MemberController {
 
 		return new ResponseEntity<>(message, headers, message.getStatus());
 	}
+
+	@Operation(summary = "회원 가입", description = "회원 가입 API")
+	@ApiResponses({
+			@ApiResponse(responseCode = "200", description = "OK"),
+			@ApiResponse(responseCode = "400", description = "BAD REQUEST"),
+			@ApiResponse(responseCode = "404", description = "NOT FOUND"),
+			@ApiResponse(responseCode = "500", description = "INTERNAL SERVER ERROR")
+	})
+	@PostMapping("test")
+	public ResponseEntity<ApiResponseMessage> test(
+			@RequestParam("id") String id,
+			@RequestParam("name") String name) {
+		HttpHeaders headers = new HttpHeaders();
+		ApiResponseMessage message = new ApiResponseMessage();
+
+		headers.setContentType(new MediaType("application", "json", StandardCharsets.UTF_8));
+
+		//동일한 MemberId 체크
+		message.setStatus(HttpStatus.OK.value());
+		message.setDescription("");
+		message.setData(id + name);
+
+		return new ResponseEntity<>(message, headers, message.getStatus());
+	}
 }
